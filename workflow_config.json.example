@@ -1,0 +1,14 @@
+{
+  "api_keys": {
+    "openrouter": "your-openrouter-api-key-here",
+    "openai": "your-openai-api-key-here",
+    "github": "your-github-token-here"
+  },
+  "http": {
+    "default_headers": {},
+    "timeout": 30
+  },
+  "workflows": {
+    "storage_path": "./workflows"
+  }
+}
