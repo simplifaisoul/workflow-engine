@@ -1,0 +1,7 @@
+# Workflow Engine Requirements
+aiohttp>=3.9.0
+
+# Optional dependencies for extended features
+# gTTS>=2.3.0  # For free text-to-speech
+# PyGithub>=2.1.0  # For GitHub integration
+# python-dotenv>=1.0.0  # For environment variable management

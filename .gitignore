@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Workflow Engine
+workflow_config.json
+workflows/
+*.log
+
+# API Keys and Secrets
+.env
+*.key
+*.pem
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+test_output/
+*.mp3
+*.mp4
+*.jpg
+*.png
