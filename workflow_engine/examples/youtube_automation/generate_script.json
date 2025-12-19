@@ -1,0 +1,60 @@
+{
+  "name": "Generate AI Script (3-Act Story)",
+  "description": "Generate a 3-act story script from YouTube transcript",
+  "nodes": [
+    {
+      "id": "trigger_1",
+      "name": "Start",
+      "type": "trigger",
+      "parameters": {
+        "trigger_type": "manual"
+      }
+    },
+    {
+      "id": "transform_1",
+      "name": "Prepare Transcript",
+      "type": "transform",
+      "parameters": {
+        "operation": "format_string",
+        "template": "Transcript: {transcript}"
+      }
+    },
+    {
+      "id": "ai_1",
+      "name": "Generate 3-Act Story",
+      "type": "ai",
+      "parameters": {
+        "provider": "openrouter",
+        "model": "openai/gpt-4",
+        "prompt": "Convert the following YouTube transcript into a compelling 3-act story structure:\n\nAct 1: Setup and introduction\nAct 2: Development and conflict\nAct 3: Resolution and conclusion\n\nUse random character names to avoid repetition. Make it engaging and suitable for a faceless YouTube channel.\n\nTranscript:\n{{$json.transcript}}"
+      }
+    },
+    {
+      "id": "transform_2",
+      "name": "Format Script",
+      "type": "transform",
+      "parameters": {
+        "operation": "merge",
+        "merge_data": {
+          "script_type": "3-act",
+          "generated_at": "{{$now}}"
+        }
+      }
+    },
+    {
+      "id": "database_1",
+      "name": "Save Script",
+      "type": "database",
+      "parameters": {
+        "operation": "write",
+        "table": "scripts"
+      }
+    }
+  ],
+  "connections": {
+    "trigger_1": ["transform_1"],
+    "transform_1": ["ai_1"],
+    "ai_1": ["transform_2"],
+    "transform_2": ["database_1"]
+  }
+}

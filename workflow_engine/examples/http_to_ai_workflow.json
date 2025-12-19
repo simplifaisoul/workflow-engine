@@ -1,0 +1,48 @@
+{
+  "name": "HTTP to AI Workflow",
+  "description": "Fetch data from HTTP and process with AI",
+  "nodes": [
+    {
+      "id": "trigger_1",
+      "name": "Start",
+      "type": "trigger",
+      "parameters": {
+        "trigger_type": "manual"
+      }
+    },
+    {
+      "id": "http_1",
+      "name": "Fetch Data",
+      "type": "http",
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.github.com/repos/microsoft/vscode",
+        "headers": {}
+      }
+    },
+    {
+      "id": "transform_1",
+      "name": "Extract Description",
+      "type": "transform",
+      "parameters": {
+        "operation": "map",
+        "map_key": "description"
+      }
+    },
+    {
+      "id": "ai_1",
+      "name": "Analyze with AI",
+      "type": "ai",
+      "parameters": {
+        "provider": "openrouter",
+        "model": "openai/gpt-3.5-turbo",
+        "prompt": "Analyze this GitHub repository description and provide insights: {{$json}}"
+      }
+    }
+  ],
+  "connections": {
+    "trigger_1": ["http_1"],
+    "http_1": ["transform_1"],
+    "transform_1": ["ai_1"]
+  }
+}

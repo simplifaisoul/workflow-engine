@@ -1,0 +1,47 @@
+{
+  "name": "Generate Voiceover",
+  "description": "Generate voiceover from script text",
+  "nodes": [
+    {
+      "id": "trigger_1",
+      "name": "Start",
+      "type": "trigger",
+      "parameters": {
+        "trigger_type": "manual"
+      }
+    },
+    {
+      "id": "transform_1",
+      "name": "Extract Script Text",
+      "type": "transform",
+      "parameters": {
+        "operation": "map",
+        "map_key": "script"
+      }
+    },
+    {
+      "id": "voiceover_1",
+      "name": "Generate Voiceover",
+      "type": "voiceover",
+      "parameters": {
+        "provider": "elevenlabs",
+        "voice_id": "21m00Tcm4TlvDq8ikWAM",
+        "model": "eleven_multilingual_v2"
+      }
+    },
+    {
+      "id": "database_1",
+      "name": "Save Voiceover",
+      "type": "database",
+      "parameters": {
+        "operation": "write",
+        "table": "voiceovers"
+      }
+    }
+  ],
+  "connections": {
+    "trigger_1": ["transform_1"],
+    "transform_1": ["voiceover_1"],
+    "voiceover_1": ["database_1"]
+  }
+}

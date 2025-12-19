@@ -1,0 +1,92 @@
+{
+  "name": "Find Viral YouTube Videos",
+  "description": "Find viral YouTube videos based on view count criteria",
+  "nodes": [
+    {
+      "id": "trigger_1",
+      "name": "Start",
+      "type": "trigger",
+      "parameters": {
+        "trigger_type": "manual"
+      }
+    },
+    {
+      "id": "http_1",
+      "name": "Get YouTube Videos",
+      "type": "http",
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&order=viewCount&maxResults=50&key={{$json.api_key}}",
+        "headers": {}
+      }
+    },
+    {
+      "id": "transform_1",
+      "name": "Extract Video Data",
+      "type": "transform",
+      "parameters": {
+        "operation": "map",
+        "map_key": "items"
+      }
+    },
+    {
+      "id": "youtube_1",
+      "name": "Check Viral Criteria",
+      "type": "youtube",
+      "parameters": {
+        "operation": "check_viral",
+        "min_views_1day": 10000,
+        "min_views_7day": 50000,
+        "min_views_30day": 200000
+      }
+    },
+    {
+      "id": "condition_1",
+      "name": "Filter Viral",
+      "type": "condition",
+      "parameters": {
+        "condition_type": "equals",
+        "field": "is_viral",
+        "value": "true"
+      }
+    },
+    {
+      "id": "database_1",
+      "name": "Check Duplicates",
+      "type": "database",
+      "parameters": {
+        "operation": "check_exists",
+        "table": "videos",
+        "check_key": "video_id"
+      }
+    },
+    {
+      "id": "condition_2",
+      "name": "Not Duplicate",
+      "type": "condition",
+      "parameters": {
+        "condition_type": "equals",
+        "field": "exists",
+        "value": "false"
+      }
+    },
+    {
+      "id": "database_2",
+      "name": "Save Video",
+      "type": "database",
+      "parameters": {
+        "operation": "write",
+        "table": "videos"
+      }
+    }
+  ],
+  "connections": {
+    "trigger_1": ["http_1"],
+    "http_1": ["transform_1"],
+    "transform_1": ["youtube_1"],
+    "youtube_1": ["condition_1"],
+    "condition_1": ["database_1"],
+    "database_1": ["condition_2"],
+    "condition_2": ["database_2"]
+  }
+}

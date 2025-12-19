@@ -1,0 +1,119 @@
+{
+  "name": "YouTube Channel Automation - Main Workflow",
+  "description": "Complete automation workflow for AI faceless YouTube channels",
+  "nodes": [
+    {
+      "id": "trigger_1",
+      "name": "Schedule Trigger",
+      "type": "trigger",
+      "parameters": {
+        "trigger_type": "schedule"
+      }
+    },
+    {
+      "id": "database_1",
+      "name": "Get Pending Videos",
+      "type": "database",
+      "parameters": {
+        "operation": "filter",
+        "table": "videos",
+        "filter_key": "status",
+        "filter_value": "pending"
+      }
+    },
+    {
+      "id": "condition_1",
+      "name": "Has Videos",
+      "type": "condition",
+      "parameters": {
+        "condition_type": "greater_than",
+        "field": "count",
+        "value": "0"
+      }
+    },
+    {
+      "id": "transform_1",
+      "name": "Get First Video",
+      "type": "transform",
+      "parameters": {
+        "operation": "map",
+        "map_key": "records[0]"
+      }
+    },
+    {
+      "id": "http_1",
+      "name": "Get Transcript",
+      "type": "http",
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.youtube.com/api/timedtext?lang=en&v={{$json.video_id}}"
+      }
+    },
+    {
+      "id": "ai_1",
+      "name": "Generate Script",
+      "type": "ai",
+      "parameters": {
+        "provider": "openrouter",
+        "model": "openai/gpt-4",
+        "prompt": "Convert this transcript into a 3-act story:\n\n{{$json.transcript}}"
+      }
+    },
+    {
+      "id": "image_1",
+      "name": "Generate Images",
+      "type": "image",
+      "parameters": {
+        "provider": "openrouter",
+        "num_images": 6,
+        "prompt": "Create engaging b-roll images for: {{$json.script}}"
+      }
+    },
+    {
+      "id": "voiceover_1",
+      "name": "Generate Voiceover",
+      "type": "voiceover",
+      "parameters": {
+        "provider": "elevenlabs",
+        "text": "{{$json.script}}"
+      }
+    },
+    {
+      "id": "http_2",
+      "name": "Render Video",
+      "type": "http",
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.renderapi.com/v1/render",
+        "headers": {
+          "Authorization": "Bearer {{$json.render_api_key}}"
+        },
+        "body": {
+          "images": "{{$json.images}}",
+          "audio": "{{$json.voiceover_url}}",
+          "format": "mp4"
+        }
+      }
+    },
+    {
+      "id": "database_2",
+      "name": "Update Status",
+      "type": "database",
+      "parameters": {
+        "operation": "write",
+        "table": "videos"
+      }
+    }
+  ],
+  "connections": {
+    "trigger_1": ["database_1"],
+    "database_1": ["condition_1"],
+    "condition_1": ["transform_1"],
+    "transform_1": ["http_1"],
+    "http_1": ["ai_1"],
+    "ai_1": ["image_1", "voiceover_1"],
+    "image_1": ["http_2"],
+    "voiceover_1": ["http_2"],
+    "http_2": ["database_2"]
+  }
+}

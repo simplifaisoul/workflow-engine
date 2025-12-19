@@ -1,0 +1,74 @@
+{
+  "name": "Generate B-Roll Images",
+  "description": "Generate multiple images for video b-roll",
+  "nodes": [
+    {
+      "id": "trigger_1",
+      "name": "Start",
+      "type": "trigger",
+      "parameters": {
+        "trigger_type": "manual"
+      }
+    },
+    {
+      "id": "transform_1",
+      "name": "Extract Scenes",
+      "type": "transform",
+      "parameters": {
+        "operation": "format_string",
+        "template": "Scene description: {scene}"
+      }
+    },
+    {
+      "id": "image_1",
+      "name": "Generate Image 1",
+      "type": "image",
+      "parameters": {
+        "provider": "openrouter",
+        "model": "black-forest-labs/flux-pro",
+        "prompt": "{{$json.scene_1}}",
+        "num_images": 1
+      }
+    },
+    {
+      "id": "image_2",
+      "name": "Generate Image 2",
+      "type": "image",
+      "parameters": {
+        "provider": "openrouter",
+        "model": "black-forest-labs/flux-pro",
+        "prompt": "{{$json.scene_2}}",
+        "num_images": 1
+      }
+    },
+    {
+      "id": "image_3",
+      "name": "Generate Image 3",
+      "type": "image",
+      "parameters": {
+        "provider": "openrouter",
+        "model": "black-forest-labs/flux-pro",
+        "prompt": "{{$json.scene_3}}",
+        "num_images": 1
+      }
+    },
+    {
+      "id": "transform_2",
+      "name": "Combine Images",
+      "type": "transform",
+      "parameters": {
+        "operation": "merge",
+        "merge_data": {
+          "image_count": 3
+        }
+      }
+    }
+  ],
+  "connections": {
+    "trigger_1": ["transform_1"],
+    "transform_1": ["image_1", "image_2", "image_3"],
+    "image_1": ["transform_2"],
+    "image_2": ["transform_2"],
+    "image_3": ["transform_2"]
+  }
+}
